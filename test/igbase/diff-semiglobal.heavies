@@ -1,0 +1,16 @@
+REGIONS:	errors	(signed	/ unsigned)	(signed	/ unsigned)	 error rate
+FR1 start:	27	(-0.105	/ 0.105)	(-1.185	/ 1.185)	0.0888
+FR1 end:	4	(0.033	/ 0.033)	(2.500	/ 2.500)	0.0132
+CDR1 start:	4	(0.033	/ 0.033)	(2.500	/ 2.500)	0.0132
+CDR1 end:	0	(0.000	/ 0.000)	(0.000	/ 0.000)	0.0000
+FR2 start:	0	(0.000	/ 0.000)	(0.000	/ 0.000)	0.0000
+FR2 end:	1	(-0.007	/ 0.007)	(-2.000	/ 2.000)	0.0033
+CDR2 start:	1	(-0.007	/ 0.007)	(-2.000	/ 2.000)	0.0033
+CDR2 end:	1	(0.013	/ 0.013)	(4.000	/ 4.000)	0.0033
+FR3 start:	1	(0.013	/ 0.013)	(4.000	/ 4.000)	0.0033
+FR3 end:	62	(0.273	/ 0.273)	(1.339	/ 1.339)	0.2039
+Double-sequence list:
+2gjj A,B A21 single-chain antibody fragment against erbB2 Entity#:1
+1jp5 A,B single-chain Fv fragment 1696 Entity#:1
+1lmk A,C,E,G ANTI-PHOSPHATIDYLINOSITOL SPECIFIC PHOSPHOLIPASE C DIABODY Entity#:1
+1x9q A 4m5.3 anti-fluorescein single chain antibody fragment Entity#:1
