@@ -1,10 +1,7 @@
-import alicont.algorithms.AlgorithmType
-import org.scalatest._
-import org.scalatest.matchers.ShouldMatchers
-
-
-import alicont.common.Scoring
-import igcont.Container
+import ru.biocad.ig.alicont.algorithms.AlgorithmType
+import ru.biocad.ig.alicont.common.Scoring
+import ru.biocad.ig.igcont.Container
+import org.scalatest.{Matchers, FlatSpec}
 import scala.collection.mutable
 
 /**
@@ -13,7 +10,8 @@ import scala.collection.mutable
  * Date: 30.10.13
  * Time: 15:25
  */
-class ContainerTest extends FlatSpec with ShouldMatchers {
+class ContainerTest extends FlatSpec with Matchers {
+  val path : String = "data/matrix/NUC4.4.txt"
 
   "Container" should "add sequences easy" in {
     val cont = new Container("ACGT", 'N')
@@ -56,7 +54,6 @@ class ContainerTest extends FlatSpec with ShouldMatchers {
   }
 
   it should "search for alignments right" in {
-    val path : String = "../../data/matrix/NUC4.4.txt"
     val cont = new Container("ACGT", 'N', Array("A1", "A2", "A3"), 7)
 
     cont.push("ACGTAGCTACGATGCGACGACGACGAGGATGTTGGTTT", "Seq1")
@@ -87,7 +84,6 @@ class ContainerTest extends FlatSpec with ShouldMatchers {
   }
 
   it should "annotate new sequences" in {
-    val path : String = "../../data/matrix/NUC4.4.txt"
     val cont = new Container("ACGT", 'N', Array("A"), 3)
     cont.push("GCTGGT", "Seq1")
     cont.push("GCCGGT", "Seq2")
@@ -107,8 +103,34 @@ class ContainerTest extends FlatSpec with ShouldMatchers {
     cont.record(0).setAnnotation(3, "A", "1")
     cont.record(1).setAnnotation(2, "A", "2")
 
-    val res = cont.annotate("CTGGC", -5, Scoring.loadMatrix(path), AlgorithmType.GLOBAL, 3)
+    val res = cont.annotate("CTGGC", -5, Scoring.loadMatrix(path), AlgorithmType.GLOBAL, 3).annotations
+    res.forall(tpl => tpl._2("A") == "1") shouldEqual true
+  }
 
-    res.forall(tpl => tpl._2("A") == "1") should be (true)
+  it should "annotate new sequences (local)" in {
+    val cont = new Container("ACGT", 'N', Array("A"), 3)
+    cont.push("AAATTT", "1")
+    cont.push("GGGCCC", "2")
+
+    Array("1", "2").foreach(seq => {
+      val rec = cont.record(seq)
+      (0 until 6).foreach(rec.setAnnotation(_, "A", seq))
+    })
+
+    val res = cont.annotate("AAACCC", -5, Scoring.loadMatrix(path), AlgorithmType.LOCAL, 10).annotations
+    println(res)
+    res.map(tpl => tpl._2("A")).mkString should be ("111222")
+  }
+
+  it should "take variants" in {
+    val cont = new Container("ACGT", 'N', Array("A"), 3)
+    cont.push("AAATTT", "1")
+    cont.push("GGGCCC", "2")
+
+    val res = cont.variants("AAACCC", -5, Scoring.loadMatrix(path), AlgorithmType.LOCAL, 10)._1
+    res.flatMap(vr => vr.variants).mkString should be ("AAACCC")
+
+    val res2 = cont.variants("AAACCC", -5, Scoring.loadMatrix(path), AlgorithmType.GLOBAL, 10)._1
+    res2.flatMap(vr => vr.variants).mkString should be ("AGAGAGTCTCTC")
   }
 }

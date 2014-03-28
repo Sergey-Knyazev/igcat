@@ -1,4 +1,4 @@
-import igcont.{ContainerUtils, Container}
+import ru.biocad.ig.igcont.{ContainerUtils, Container}
 
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random

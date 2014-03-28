@@ -1,8 +1,9 @@
-import alicont.algorithms.AlgorithmType._
-import alicont.common.Scoring
-import annotators.RegionAnnotator
-import common.{FileUtils, SequenceType}
-import java.io.FileNotFoundException
+
+import ru.biocad.ig.alicont.algorithms.AlgorithmType._
+import ru.biocad.ig.alicont.common.Scoring
+import com.typesafe.scalalogging.slf4j.Logging
+import java.io._
+import ru.biocad.ig.regions.RegionsRunner
 
 /**
  * Created with IntelliJ IDEA.
@@ -10,25 +11,60 @@ import java.io.FileNotFoundException
  * Date: 31.10.13
  * Time: 9:59
  */
-object Main {
-  case class Config(amino : Boolean = false, fasta : String = null, kabat : String = null, source : String = null,
-                    count : Int = 3, gap_open : Double = -10, gap_ext : Double = -1, gap : Double = -5,
-                    matrix : String = null, align : AlgorithmType = SEMIGLOBAL, marking : Boolean = false,
-                    filter : Int = 0, debug : Boolean = false)
+object Main extends Logging {
+  private case class Config(amino : Boolean = false, fasta : File = null, kabat : File = null, source : File = null,
+                            count : Int = 3, gap_open : Double = -10, gap_ext : Double = -1, gap : Double = -5,
+                            scoring : Array[Array[Double]] = null, align : AlgorithmType = SEMIGLOBAL,
+                            marking : Boolean = false, filter : Boolean = false, outdir : File = null,
+                            add_group : Boolean = false, par : Boolean = false, debug : Boolean = false)
 
-  def getParser : scopt.OptionParser[Config] = new scopt.OptionParser[Config]("ig-regions") {
+  def main(args : Array[String]) = {
+    val parser = getParser
+
+    parser.parse(args, Config()) map {config => {
+      try {
+        RegionsRunner.run(config.amino, config.fasta, config.kabat, config.source,
+                          config.count, config.gap_open, config.gap_ext, config.gap,
+                          config.scoring, config.align, config.marking, config.filter,
+                          config.outdir, config.par, config.add_group)
+      } catch {
+        case e : Exception =>
+          logger.error(s"Fatal error: ${e.getMessage}")
+          if (config.debug) {
+            e.printStackTrace()
+          }
+      }
+    }} getOrElse {
+      parser.showUsage
+    }
+  }
+
+  private def getParser : scopt.OptionParser[Config] = new scopt.OptionParser[Config]("ig-regions") {
     head("ig-regions", "1.0-SNAPSHOT")
     note("Required:")
-    opt[String]('s', "source") required() action {(s, c) => c.copy(source = s)} text "file to annotate [fasta]"
-    opt[String]('r', "reference") required() action {(s, c) => c.copy(fasta = s)} text "reference file [fasta]"
-    opt[String]('m', "marking") required() action {(s, c) => c.copy(kabat = s)} text "reference marking [igblast marking format]"
+    opt[File]('s', "source") required() action {(s, c) => c.copy(source = s)} validate {x =>
+      if (x.canRead) success  else failure("Source file does not exists")
+    } text "file to annotate [fasta]"
+    opt[File]('r', "reference") required() action {(s, c) => c.copy(fasta = s)} validate {x =>
+      if (x.canRead) success  else failure("Reference file does not exists")
+    } text "reference file [fasta]"
+    opt[File]('m', "marking") required() action {(s, c) => c.copy(kabat = s)} validate {x =>
+      if (x.canRead) success  else failure("Marking file does not exists")
+    } text "reference marking [igblast marking format]"
     note("Optional:")
+    opt[File]("outdir") action {(x, c) => c.copy(outdir = x)} validate {x =>
+      if (x.canRead) success else failure("Output directory does not exists")
+    } text "output directory"
+    opt[Unit]("par") action {(_, c) => c.copy(par = true)} text "Use parallel mode (highly experimental)"
+    opt[Unit]("group") action {(_, c) => c.copy(add_group = true)} text "Add germline group to name"
     opt[Unit]('a', "amino") action {(_, c) => c.copy(amino = true)} text "use amino acid data"
     opt[Unit]('l', "igblast-like") action {(_, c) => c.copy(marking = true)} text "output as igblast marking"
-    opt[Int]('f', "filter-window") action {(s, c) => c.copy(filter = s)} text "set window size for filtration (default: disabled)"
+    opt[Unit]("filter") action {(s, c) => c.copy(filter = true)} text "enable simple filtration (default: disabled)"
     opt[Int]('n', "alignments") action {(s, c) => c.copy(count = s)} text "number of using alignments for annotation (default: 3)"
     note("\n  alignment parameters\n")
-    opt[String]('x', "matrix") action {(s, c) => c.copy(matrix = s)} text "use external alignment matrix [txt]"
+    opt[File]('x', "matrix") action {(x, c) => c.copy(scoring = Scoring.loadMatrix(x))} validate {x =>
+      if (x.canRead) success else failure("Scoring matrix file does not exists")
+    } text "use external alignment matrix [txt]"
     opt[Double]('g', "gap") action {(s, c) => c.copy(gap = s)} text "simple gap score (default: -5)"
     opt[Double]('o', "gap-open") action {(s, c) => c.copy(gap_open = s)} text "affine open gap score (default: -10)"
     opt[Double]('e', "gap-ext") action {(s, c) => c.copy(gap_ext = s)} text "affine extension gap score (default: -1)"
@@ -37,90 +73,11 @@ object Main {
     opt[Unit]("local") action {(_, c) => c.copy(align = LOCAL)} text "use local alignment"
     opt[Unit]("semiglobal") action {(_, c) => c.copy(align = SEMIGLOBAL)} text "use semiglobal alignment (default)"
     opt[Unit]("affine-global") action {(_, c) => c.copy(align = AFFINE_GLOBAL)} text "use global alignment"
-    opt[Unit]("affine-local") action {(_, c) => c.copy(align = AFFINE_LOCAL)} text "use global alignment"
-    opt[Unit]("affine-semiglobal") action {(_, c) => c.copy(align = AFFINE_SEMIGLOBAL)} text "use global alignment"
+    opt[Unit]("affine-local") action {(_, c) => c.copy(align = AFFINE_LOCAL)} text "use local alignment"
+    opt[Unit]("affine-semiglobal") action {(_, c) => c.copy(align = AFFINE_SEMIGLOBAL)} text "use semiglobal alignment"
     note("Debug:")
     opt[Unit]("debug") action {(_, c) => c.copy(debug = true)} text "show exceptions on fail"
     note("Help:")
     help("help") text "this message"
-  }
-
-  def constructAnnotator(config : Config) : RegionAnnotator =
-    new RegionAnnotator("Name", if (config.amino) SequenceType.AMINO else SequenceType.NUCLEO,
-                        config.fasta, config.kabat,
-                        (config.gap_open, config.gap_ext, config.gap),
-                        if (config.matrix != null) Scoring.loadMatrix(config.matrix) else null,
-                        config.align)
-
-  def constructMarkup(anno : String) : String = {
-    val r = Array.fill[Array[Int]](7)(Array.fill[Int](2)(0))
-    val sb = new StringBuilder()
-    anno.zipWithIndex.foreach(tpl => {
-      val (c, i) = tpl
-      val ci = c.asDigit
-      if (ci != 7) {
-        if (r(ci)(0) == 0) {
-          r(ci)(0) = i + 1
-        }
-        else {
-          r(ci)(1) = i + 1
-        }
-      }
-    })
-    (0 until r.size).foreach(i => {
-      sb.append("\t%d\t%d".format(r(i)(0), r(i)(1)))
-    })
-
-    sb.toString()
-  }
-
-  def run(config : Config) : Unit = {
-    val r = constructAnnotator(config)
-    val data = FileUtils.readFasta(config.source)
-    data.foreach(tpl => {
-      val (name, seq) = tpl
-      val raw_anno = r.annotate(seq, config.count).foldLeft("")((s, i) => s + i)
-      val anno = if (config.filter > 1) filterAnno(raw_anno, config.filter) else raw_anno
-
-      if (!config.marking) {
-        printf("> %s\n%s\n%s\n\n", name, seq, anno)
-      }
-      else {
-        printf("%s%s\n", name, constructMarkup(anno))
-      }
-    })
-  }
-
-  def filterAnno(anno : String, window : Int) : String = {
-    val sb = new StringBuilder()
-    (0 until anno.size).foreach(i => {
-      sb += anno.substring(math.max(0, i - window / 2),
-                           math.min(anno.size, i + window / 2)).groupBy(identity).maxBy(_._2.size)._1
-    })
-    sb.toString()
-  }
-
-  def main(args : Array[String]) = {
-    val parser = getParser
-
-    parser.parse(args, Config()) map {config => {
-      try {
-        run(config)
-      } catch {
-        case e : FileNotFoundException => {
-          Console.err.printf("One of input files was not found: %s\n", e.getMessage)
-          sys.exit(0)
-        }
-        case e : Exception => {
-          Console.err.printf("Unknown fatal error: %s\n", e)
-          if (config.debug) {
-            e.printStackTrace()
-          }
-          sys.exit(0)
-        }
-      }
-    }} getOrElse {
-      parser.showUsage
-    }
   }
 }

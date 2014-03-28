@@ -12,16 +12,10 @@ To run ig-regions you can do this:
 $ java -jar target/ig-regions-1.0-SNAPSHOT.jar [args]
 ```
 
-or just use:
-
-```
-$ run-regions.sh [args]
-```
-
 Arguments
 ---------
 
-To use the tool you have to set some required arguments:
+To use the tool you have to set some required arguments (flags are ):
 
 ```
   -s <value> | --source <value>
@@ -30,6 +24,13 @@ To use the tool you have to set some required arguments:
         reference file [fasta]
   -m <value> | --marking <value>
         reference marking [igblast marking format]
+```
+
+For detailed output you can specify the output directory:
+
+```
+  --outdir <value>
+        output directory
 ```
 
 If you want to run script on protein data, just set:
@@ -48,8 +49,8 @@ To change output to default IgBLAST marking data files use:
 
 Most of time you need not to use additional output filtration, but you can:
 ```
-  --filter-window <value>
-        set window size for filtration (default: disabled)
+  --filter
+        enable simple filtration (default: disabled)
 ```
 
 You can choose the alignment method for annotation, but we strongly recommend to use default for regions:
@@ -82,6 +83,15 @@ If you want to customize alignment options, set:
         affine extension gap score (default: -1)
 ```
 
+In addition you can run igcat alignment in parallel mode and modify input sequence names:
+
+```
+  --par
+        Use parallel mode (highly experimental)
+  --group
+        Add germline group to name
+```
+
 You can always see this help, using:
 
 ```
@@ -95,7 +105,7 @@ Example
 To test the system just run:
 
 ```
-./run.sh -r ../data/germline/human/vl.fasta -m ../data/nomenclature/human/vl.fasta -s 'TODO: ADD_FILE' --amino --igblast-like
+java -Dlogback.configurationFile=../logback.xml -jar target/ig-regions-1.0-SNAPSHOT-.jar -r ../data/germline/human/vl.fasta -m ../data/nomenclature/human/vl.fasta -s 'TODO: ADD_FILE' --amino --igblast-like
 ```
 
 Citation
@@ -104,5 +114,5 @@ Citation
 If you use our region annotator and obtain scientific results that you publish,
 we would ask you to acknowledge the usage of IG-regions by referencing the paper:
 ```
-TODO: Paper info here
+TODO: Paper reference here
 ```

@@ -1,6 +1,5 @@
-import igcont.anno.Anno
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import ru.biocad.ig.igcont.anno.Anno
+import org.scalatest.{Matchers, FlatSpec}
 
 /**
  * Created with IntelliJ IDEA.
@@ -8,7 +7,7 @@ import org.scalatest.matchers.ShouldMatchers
  * Date: 30.10.13
  * Time: 20:23
  */
-class AnnoTest extends FlatSpec with ShouldMatchers {
+class AnnoTest extends FlatSpec with Matchers {
 
   "Annotations" should "store right" in {
     val anno = new Anno(Array("Regions", "Genes", "Sites"))

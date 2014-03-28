@@ -9,7 +9,13 @@ Installation
 To install just run:
 
 ```
-$ sh ./install.sh
+$ mvn clean package
+```
+
+The exuteable jar will be at:
+
+```
+ig-regions/target/ig-regions-1.0-SNAPSHOT.jar
 ```
 
 ig-regions
@@ -19,6 +25,5 @@ See more info in ig-regions/README.md
 
 Run:
 ```
-$ run-regions.sh [args]
+$ java -Dlogback.configurationFile=logback.xml -jar ig-regions/target/ig-regions-1.0-SNAPSHOT.jar [args]
 ```
-in ig-regions

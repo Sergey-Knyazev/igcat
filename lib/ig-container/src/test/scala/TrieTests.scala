@@ -1,6 +1,5 @@
-import igcont.trie.Trie
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import ru.biocad.ig.igcont.trie.Trie
+import org.scalatest.{Matchers, FlatSpec}
 
 /**
  * Created with IntelliJ IDEA.
@@ -8,7 +7,7 @@ import org.scalatest.matchers.ShouldMatchers
  * Date: 30.10.13
  * Time: 15:22
  */
-class TrieTests extends FlatSpec with ShouldMatchers {
+class TrieTests extends FlatSpec with Matchers {
 
   "A Trie" should "keep right order of elements" in {
     val t = new Trie()

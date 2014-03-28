@@ -1,6 +1,5 @@
-import igcont.kmer.bit.Counter
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import ru.biocad.ig.igcont.kmer.bit.Counter
+import org.scalatest.{Matchers, FlatSpec}
 
 /**
  * Created with IntelliJ IDEA.
@@ -8,7 +7,7 @@ import org.scalatest.matchers.ShouldMatchers
  * Date: 30.10.13
  * Time: 15:23
  */
-class KmersTest extends FlatSpec with ShouldMatchers {
+class KmersTest extends FlatSpec with Matchers {
 
   "K-mers" should "process special symbols correct" in {
     val k = new Counter("01", '-', 3)
