@@ -47,7 +47,8 @@ Where args are user arguments which allow to adjust runs for user needs.
 You can specify parameters such as fasta file names, alignment matrices location,
 alignment type, references database, and so on (see section~\ref{subsec:options}).
 
-Simple run can be started by command:
+Simple run can be started by using commands from \$IGCAT\_HOME:
+\shellcmd{\$ mkdir test/simple\_example/out}
 \shellcmd{\$ java -Dlogback.configurationFile=logback.xml
 -jar ig-regions/target/ig-regions-1.0-SNAPSHOT.jar -r data/germline/human/vl.fasta
 -m data/nomenclature/human/vl.kabat -s test/simple\_example/ig.fasta --amino --igblast-like
@@ -75,7 +76,7 @@ There is mandatory arguments you should always specify:
 and it requires a marking file with information about IG regions bounds;}\\
 {\shellcmd{ -m <value> | --marking <value>}
 \indent\indent {it is a marking file in IgBLAST marking format
-(example \footnote{ftp.ncbi.nlm.nih.gov/blast/executables/igblast/release/internal data/human/}),
+(example \footnote{ftp.ncbi.nlm.nih.gov/blast/executables/igblast/release/internal\_data/human/}),
 which contains regions bound data for every IG sequence in the reference fasta file.}
 
 
@@ -214,7 +215,7 @@ Testing the influence of IgCAT container filling
 to the annotation quality can be implemented by
 test\_random\_filling.py script. To do so just go to the \$IGCAT\_HOME/scripts/test
 folder, and run following command:
-\shellcmd{\$ python test\_random\_fillings.py ../../data/germline/human/vh.fasta \\
+\shellcmd{\$ python test\_random\_filling.py ../../data/germline/human/vh.fasta \\
 ../../data/nomenclature/human/vh.kabat}
 After the run has finished, you can find results in the out\_random\_filling folder.
 This folder contains many test-X folders, where X is the number of the test.
@@ -240,7 +241,7 @@ ig-regions/target/ig-regions-1.0-SNAPSHOT.jar
 -m data/nomenclature/human/vh.kabat
 -s test/igbase/fasta/heavies.fasta
 --amino --igblast-like --outdir igblast\_compare}
- \shellcmd{\$ python script/diff\_info.py igblast\_compare/igblast\_like.marking
+ \shellcmd{\$ python scripts/diff\_info.py igblast\_compare/igblast\_like.marking
  test/igbase/igblast/heavies.kabat --part >> igblast\_compare/diff}
  In the file igblast\_compare/diff you can see statistics of prediction differences.
  
@@ -252,8 +253,8 @@ ig-regions/target/ig-regions-1.0-SNAPSHOT.jar
 -m data/nomenclature/human/vh.kabat
 -s test/rosie/fasta/vh.fasta
 --amino --igblast-like --outdir rosie\_compare}
- \shellcmd{\$ python script/diff\_info.py rosie\_compare/igblast\_like.marking}
-% test/igbase/igblast/heavies.kabat --part >> rosie\_compare/diff}
+ \shellcmd{\$ python scripts/diff\_info.py rosie\_compare/igblast\_like.marking
+ test/rosie/prediction/vh.kabat >> rosie\_compare/diff}
  In the file rosie\_compare/diff you can see statistics of prediction differences.
  See section \ref{subsec:scripts} for this file formatting description. 
  
