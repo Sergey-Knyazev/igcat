@@ -1,0 +1,269 @@
+\documentclass{scrartcl}
+
+\newcommand{\shellcmd}[1]{\\\indent\indent\texttt{\footnotesize #1}\\}
+
+\usepackage{hyperref}
+
+\title{IgCAT: a Prefix Tree-Based Immunoglobulin Annotation System}
+\subtitle{User Guide}
+\author{Sergey Knyazev}
+\date{July 2014}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+This guide will help you to install IgCAT\cite{Yakovlev2014}, to run, and to test it.
+
+\section{Installation}
+\subsection{Dependencies}
+In order to install IgCAT, you need Java Development Kit (JDK)
+\footnote{\url{http://www.oracle.com/technetwork/java/javase/overview/index.html}} and
+Appache Maven project management tool \footnote{\url{http://maven.apache.org/}} installed.
+To install JDK, open download page
+\footnote{\url{http://www.oracle.com/technetwork/java/javase/downloads/index.html}},
+find Java SE 7u65 (or better) version, then follow the instructions
+\footnote{\url{http://docs.oracle.com/javase/7/docs/webnotes/install/index.html}}.
+In case you install Maven, you will download its distributive version 3.1.1 (or better)
+from download page \footnote{\url{http://maven.apache.org/download.cgi}}
+and will install it according to the instructions.
+
+IgCAT has some helpful scripts written in Python, so if you want to run them,
+you will install python version 2.7.6 or higher \footnote{\url{https://www.python.org/downloads/}}
+with additional libraries such as BioPython \footnote{\url{http://biopython.org/wiki/Download}}. 
+
+\subsection{IgCAT Installation}
+To install IgCAT, just run following command from IgCAT home directory (\$IGCAT\_HOME):
+\shellcmd{\$ mvn clean package}
+When installation is complete an executable jar file (ig-regions-1.0-SNAPSHOT.jar) will be at:
+\shellcmd{ig-regions/target/}
+
+\section{Running}
+
+To run IgCAT you should implement following command from IgCAT home directory:
+\shellcmd{\$ java -Dlogback.configurationFile=logback.xml -jar
+ig-regions/target/ig-regions-1.0-SNAPSHOT.jar [args]}
+Where args are user arguments which allow to adjust runs for user needs.
+You can specify parameters such as fasta file names, alignment matrices location,
+alignment type, references database, and so on (see section~\ref{subsec:options}).
+
+Simple run can be started by command:
+\shellcmd{\$ java -Dlogback.configurationFile=logback.xml
+-jar ig-regions/target/ig-regions-1.0-SNAPSHOT.jar -r data/germline/human/vl.fasta
+-m data/nomenclature/human/vl.kabat -s test/simple\_example/ig.fasta --amino --igblast-like
+--outdir test/simple\_example/out}
+This command will find immunoglobulin (IG) regions location in ig.fasta with using vl.fasta and vl.kabat as library.
+Results will be in test/simple\_example/out directory (see section~\ref{subsec:files} for details).
+
+\subsection{Output files}
+\label{subsec:files}
+IgCAT generates 5 files into folder specified by user.
+These files contain regions bounds prediction.
+All files provides almost the same information, but in different formats,
+and one of them is in IgBLAST format\cite{Ye2013}.
+
+
+\subsection{Options}
+\label{subsec:options}
+This section provides a full list of IgCAT arguments.
+
+There is mandatory arguments you should always specify:
+{\shellcmd{ -s <value> | --source <value>}}
+\indent\indent {this option specifies a fasta file with IG sequences you want to annotate;}\\
+{\shellcmd{ -r <value> | --reference <value>}
+\indent\indent {this argument sets a fasta file with references for IgCAT inner database,
+and it requires a marking file with information about IG regions bounds;}\\
+{\shellcmd{ -m <value> | --marking <value>}
+\indent\indent {it is a marking file in IgBLAST marking format
+(example \footnote{ftp.ncbi.nlm.nih.gov/blast/executables/igblast/release/internal data/human/}),
+which contains regions bound data for every IG sequence in the reference fasta file.}
+
+
+For detailed output you can specify the output directory:
+  \shellcmd{ --outdir <value>}
+
+
+If you want to run script on protein sequences data, just set:
+  \shellcmd{ --amino}
+
+
+To change output to default IgBLAST marking data files use:
+	\shellcmd{--igblast-like}
+
+
+Most of time you need not to use additional output filtration, but you can:
+	\shellcmd{--filter}
+        enable simple filtration (default: disabled)
+
+
+You can choose the alignment method for annotation with or without affine gaps penalties.
+Semiglobal method without affine gaps penalties is set by default.
+We strongly recommend it for regions detection.
+But you can choose other method by one of options: 
+    \shellcmd{--global}
+        use global alignment without affine gaps penalties
+    \shellcmd{--local}
+        use local alignment without affine gaps penalties
+    \shellcmd{--semiglobal}
+        use semiglobal alignment without affine gaps penalties (default)
+  \shellcmd{--affine-global}
+        use global alignment with affine gaps penalties
+  \shellcmd{--affine-local}
+        use local alignment with affine gaps penalties
+  \shellcmd{--affine-semiglobal}
+        use semiglobal alignment with affine gaps penalties
+
+
+If you want to customize alignment options, set:
+  \shellcmd{--matrix <value>}
+        use external alignment matrix [txt]
+  \shellcmd{--gap <value>}
+        simple gap score (default: -5)
+  \shellcmd{--gap-open <value>}
+        affine open gap score (default: -10)
+  \shellcmd{--gap-ext <value>}
+        affine extension gap score (default: -1)
+
+
+In addition you can run IgCAT alignment in parallel mode and modify input sequence names:
+  \shellcmd{--par}
+        Use parallel mode
+  \shellcmd{--group}
+        Add germline group to sequence name
+
+
+You can always see this help, using:
+  \shellcmd{--help}
+
+\section{Scripts for IG annotation comparison}
+\label{subsec:scripts}
+We provide some scripts for IG annotation comparison.
+If you have annotated one dataset by two different tools or
+if you have test dataset and want to verify IgCAT
+you can use our scripts to determine the differences.
+The first script named compare\_marking.py compares
+etalon annotation you suppose to be true
+and annotation you want to check.
+Script will gather statistics of how checking annotation
+is differ from etalon annotation.
+You can run the script from \$IGCAT\_HOME/scripts as follow:
+\shellcmd{python compare\_marking.py etalon\_marking checking\_marking}
+where 'etalon\_marking' and 'checking\_marking' are your files
+with annotations in IgBLAST format.
+The script will generate text with comparison results.
+
+If you have one dataset annotated by two different tools
+you can compare how these annotations are differ.
+For that you can use the second script named diff\_info.py .
+To run it just go to \$IGCAT\_HOME/scripts and use command:
+\shellcmd{python compare\_marking.py marking1 marking2}
+where 'marking1' and 'marking2' are your files
+with annotations in IgBLAST format.
+The script will generate text with comparison results.
+Results are formatted as table.
+Columns description is follow:\\
+\begin{tabular}{l l}
+\hline
+Column number & Description \\
+\hline
+1 & Region bound name \\
+2 & Count of different predictions \\
+3 & Average bound shift in whole dataset \\
+4 & Average bound shift in set of sequences, where difference in predictions occurs \\
+5 & Rate of different predictions to total number of predictions \\
+\hline
+\end{tabular}
+
+
+\section{Testing}
+
+To implement the tests highlighted in IgCAT article \cite{Yakovlev2014},
+you can use our python scripts.
+These scripts generate reference and test data, annotate different datasets using IgCAT,
+and check the annotation quality.
+Furthermore, they can compare similarity of annotation predictions
+created by different tools.
+Our python scripts can also be useful for investigation
+how IgCAT container filling influences upon annotation quality.
+
+\subsection{Testing IgCAT prediction quality}
+
+Testing of prediction quality consists of two part: generation of valid reference data and 
+estimation of the prediction accuracy.
+We used VBASE\cite{Tomlinson1996} database of known human IG sequences
+to generate valid database. We simply combined V,D,J-genes in all possible ways,
+so we reconstructed natural principles.
+This dataset can be simply generated by our script using following instructions.
+To do so change work directory from IgCAT home to data/generator/vdj\_combinator
+using the command:
+\shellcmd{\$ cd data/generator/vdj\_combinator}
+then run python script named vdj\_combinator.py:
+\shellcmd{\$ python vdj\_combinator.py}
+This will generate 6 files into working directory:
+3 fasta files (vl.fasta, vh.fasta, vk.fasta)
+with possible human immunoglobulin sequences,
+and 3 kabat files (vl.kabat, vh.kabat, and vk.kabat)
+with bounds marking to corresponding fasta files.
+Copy them into your reference database directory.
+Alternatively, you can find these files already generated in directories:
+\$IGCAT\_HOME/data/germline/human for fasta files,
+and \$IGCAT\_HOME/data/nomenclature/human for kabat ones.
+
+
+Testing the influence of IgCAT container filling 
+to the annotation quality can be implemented by
+test\_random\_filling.py script. To do so just go to the \$IGCAT\_HOME/scripts/test
+folder, and run following command:
+\shellcmd{\$ python test\_random\_fillings.py ../../data/germline/human/vh.fasta \\
+../../data/nomenclature/human/vh.kabat}
+After the run has finished, you can find results in the out\_random\_filling folder.
+This folder contains many test-X folders, where X is the number of the test.
+Every test-X folder contains many train-Y folders,
+where Y is the number of sequences used for filling IgCAT
+container. Train-Y folder contains results with statistics.
+
+\subsection{Comparing IgCAT with another tools}
+You can compare the IG annotation by IgCAT with IG annotation by another tool.
+For that you need to annotate the same dataset by both tools and to compare
+their predictions using \$IGCAT\_HOME/scripts/diff\_info.py.
+We have prepared data, which was annotated by IgBLAST and Rosie tools 
+(you can find it in folders test/igbase and test/rosie).
+There is directory named 'fasta' with sequences already annotated by
+according tools and directory named 'prediction' with prediction results.
+So to implement the test you just need to annotate sequences from
+'fasta' folder by IgCAT and compare marking. Following commands will
+help you to compare IgCAT with IgBLAST, just run them from IgCAT home folder:
+\shellcmd{\$ mkdir igblast\_compare}
+\shellcmd{\$ java -Dlogback.configurationFile=logback.xml -jar 
+ig-regions/target/ig-regions-1.0-SNAPSHOT.jar
+-r data/germline/human/vh.fasta
+-m data/nomenclature/human/vh.kabat
+-s test/igbase/fasta/heavies.fasta
+--amino --igblast-like --outdir igblast\_compare}
+ \shellcmd{\$ python script/diff\_info.py igblast\_compare/igblast\_like.marking
+ test/igbase/igblast/heavies.kabat --part >> igblast\_compare/diff}
+ In the file igblast\_compare/diff you can see statistics of prediction differences.
+ 
+ To compare IgCAT with Rosie just run following:
+ \shellcmd{\$ mkdir rosie\_compare}
+\shellcmd{\$ java -Dlogback.configurationFile=logback.xml -jar 
+ig-regions/target/ig-regions-1.0-SNAPSHOT.jar
+-r data/germline/human/vh.fasta
+-m data/nomenclature/human/vh.kabat
+-s test/rosie/fasta/vh.fasta
+--amino --igblast-like --outdir rosie\_compare}
+ \shellcmd{\$ python script/diff\_info.py rosie\_compare/igblast\_like.marking}
+% test/igbase/igblast/heavies.kabat --part >> rosie\_compare/diff}
+ In the file rosie\_compare/diff you can see statistics of prediction differences.
+ See section \ref{subsec:scripts} for this file formatting description. 
+ 
+
+\section{Citation}
+If you want to use our for your scientific research,
+please cite our paper \cite{Yakovlev2014}.
+
+\bibliographystyle{plain}
+\bibliography{bibliography.bib}
+
+
+\end{document}

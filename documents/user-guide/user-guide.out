@@ -1,0 +1,12 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Installation}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Dependencies}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{IgCAT Installation}{section.2}% 4
+\BOOKMARK [1][-]{section.3}{Running}{}% 5
+\BOOKMARK [2][-]{subsection.3.1}{Output files}{section.3}% 6
+\BOOKMARK [2][-]{subsection.3.2}{Options}{section.3}% 7
+\BOOKMARK [1][-]{section.4}{Scripts for IG annotation comparison}{}% 8
+\BOOKMARK [1][-]{section.5}{Testing}{}% 9
+\BOOKMARK [2][-]{subsection.5.1}{Testing IgCAT prediction quality}{section.5}% 10
+\BOOKMARK [2][-]{subsection.5.2}{Comparing IgCAT with another tools}{section.5}% 11
+\BOOKMARK [1][-]{section.6}{Citation}{}% 12

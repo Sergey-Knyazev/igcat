@@ -1,0 +1,30 @@
+\begin{thebibliography}{1}
+
+\bibitem{Lyskov2013}
+S.~Lyskov, F.~C. Chou, S.~O. Conchuir, B.~S. Der, K.~Drew, D.~Kuroda, J.~Xu,
+  B.~D. Weitzner, P.~D. Renfrew, P.~Sripakdeevong, B.~Borgo, J.~J. Havranek,
+  B.~Kuhlman, T.~Kortemme, R.~Bonneau, J.~J. Gray, and R.~Das.
+\newblock {{S}erverification of molecular modeling applications: the {R}osetta
+  {O}nline {S}erver that {I}ncludes {E}veryone ({R}{O}{S}{I}{E})}.
+\newblock {\em PLoS ONE}, 8(5):e63906, 2013.
+
+\bibitem{Tomlinson1996}
+I.~M. Tomlinson and et~al.
+\newblock {V}{B}{A}{S}{E} {S}equence {D}irectory {M}{R}{C}.
+\newblock Centre for Protein Engineering Cambridge, UK. Available:
+  \href{www2.mrc-lmb.cam.ac.uk/vbase}{http://www2.mrc-lmb.cam.ac.uk/vbase/}.
+  Accessed 23 July 2014, 1996.
+
+\bibitem{Yakovlev2014}
+P.~Yakovlev, S.~Knyazev, A.~Karabelsky, and Y.~Porozov.
+\newblock {{I}g{C}{A}{T}: a Prefix Tree-Based Immunoglobulin Annotation
+  System}.
+\newblock {\em Nucleic Acids Res.}, 2014.
+
+\bibitem{Ye2013}
+J.~Ye, N.~Ma, T.~L. Madden, and J.~M. Ostell.
+\newblock {{I}g{B}{L}{A}{S}{T}: an immunoglobulin variable domain sequence
+  analysis tool}.
+\newblock {\em Nucleic Acids Res.}, 41(Web Server issue):34--40, Jul 2013.
+
+\end{thebibliography}

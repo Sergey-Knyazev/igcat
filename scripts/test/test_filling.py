@@ -22,25 +22,25 @@ def get_split(name):
 
 def parse_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument('fasta', help='input fasta file')
+    parser.add_argument('marking', help='input marking file')
     parser.add_argument('-n', '--max-threads', default=1, type=int
         , help='maximum count of threads')
-    parser.add_argument('-o', '--out-dir', help='output directory')
-    parser.add_argument('-m', '--tests-count', help='count of tests', type=int)
-    parser.add_argument('-c', '--train-seq-count'
+    parser.add_argument('-o', '--out-dir', default='test_filling', help='output directory')
+    parser.add_argument('-m', '--tests-count', default=1, help='count of tests', type=int)
+    parser.add_argument('-c', '--train-seq-count', default=1
         , help='maximum count of sequences in container', type=int)
-    parser.add_argument('-a', '--test-seq-count'
+    parser.add_argument('-a', '--test-seq-count', default=1
         , help='maximum count of sequences for annotation', type=int)
     parser.add_argument('-p', '--mode', default='affine-semiglobal'
         , help='alignment mode')
-    parser.add_argument('-d', '--script-dir', help='scripts location')
-    parser.add_argument('-s', '--fasta', help='input fasta file')
-    parser.add_argument('-r', '--kabat', help='input kabat file')
+    parser.add_argument('-d', '--script-dir', default='..', help='scripts location')
     parser.add_argument('-f', '--test-fasta'
         , help='input fasta file with test data.'
-               + 'use it with --test-kabat')
-    parser.add_argument('-k', '--test-kabat'
-        , help='input kabat file with test data.'
-               + 'use it with --test-fasta')
+               + 'should be synchronized with --test-marking')
+    parser.add_argument('-k', '--test-marking'
+        , help='input marking file with test data.'
+               + 'should be synchronized with --test-fasta')
     return parser.parse_args()
 
 
@@ -50,26 +50,26 @@ def extract_data_files_names(args):
 
 
 def extract_test_files_names(args):
-    if args.test_fasta and args.test_kabat:
+    if args.test_fasta and args.test_marking:
         return dict(s=args.test_fasta,
-                    t=args.test_kabat)
+                    t=args.test_marking)
     fasta_pref, fasta_suff = get_split(os.path.basename(args.fasta))
-    kabat_pref, kabat_suff = get_split(os.path.basename(args.kabat))
+    marking_pref, marking_suff = get_split(os.path.basename(args.marking))
     return dict(s=args.data_dir + '/' + fasta_pref + '-test.' + fasta_suff,
-                t=args.data_dir + '/' + kabat_pref + '-test.' + kabat_suff)
+                t=args.data_dir + '/' + marking_pref + '-test.' + marking_suff)
 
 
 def generate_train_files_names(args, base_dir):
     fasta_pref, fasta_suff = get_split(os.path.basename(args.fasta))
-    kabat_pref, kabat_suff = get_split(os.path.basename(args.kabat))
+    marking_pref, marking_suff = get_split(os.path.basename(args.marking))
     return dict(r=base_dir + '/' + fasta_pref + '-train.' + fasta_suff,
-                m=base_dir + '/' + kabat_pref + '-train.' + kabat_suff)
+                m=base_dir + '/' + marking_pref + '-train.' + marking_suff)
 
 
 def generate_out_file_name(args, base_dir):
-    kabat_pref, kabat_suff = get_split(os.path.basename(args.kabat))
-    return base_dir + '/' + kabat_pref \
-                  + '-prediction.' + args.mode + '.' + kabat_suff
+    marking_pref, marking_suff = get_split(os.path.basename(args.marking))
+    return base_dir + '/' + marking_pref \
+                  + '-prediction.' + args.mode + '.' + marking_suff
 
 
 def copy_strings_fasta(fin_name, fout_name, strings_count):
@@ -84,7 +84,7 @@ def copy_strings_fasta(fin_name, fout_name, strings_count):
                 fout.write(line)
 
 
-def copy_strings_kabat(fin_name, fout_name, strings_count):
+def copy_strings_marking(fin_name, fout_name, strings_count):
     with open(fin_name) as fin:
         with open(fout_name, 'w') as fout:
             fout.writelines(itertools.islice(fin, strings_count))
@@ -95,7 +95,7 @@ def create_train_files(in_data_files_names, out_data_files_names
     copy_strings_fasta(in_data_files_names['r'],
                        out_data_files_names['r'],
                        seq_count_for_annotation)
-    copy_strings_kabat(in_data_files_names['m'],
+    copy_strings_marking(in_data_files_names['m'],
                        out_data_files_names['m'],
                        seq_count_for_annotation)
 
@@ -108,22 +108,23 @@ def execute(args, i):
     out_file_name = generate_out_file_name(args, out_dir)
     create_train_files(data_files_names, train_files_names, i)
     out_file = open(out_file_name, 'w')
-    command = 'java -jar ' \
+    command = 'java -Dlogback.configurationFile=' \
+	          + args.script_dir \
+			  + '/../logback.xml  -jar '\
               + args.script_dir \
-              + '/../../ig-regions/target/ig-regions-1.0-SNAPSHOT.jar' \
+              + '/../ig-regions/target/ig-regions-1.0-SNAPSHOT.jar' \
               + ' -s ' + data_files_names['s'] \
               + ' -r ' + train_files_names['r'] \
               + ' -m ' + train_files_names['m'] \
               + ' --amino ' + '--' + args.mode + ' --igblast-like'
     p = subprocess.Popen(shlex.split(command)
-        , universal_newlines=True, stdout=out_file
-        , cwd=args.script_dir+'/..')
+        , universal_newlines=True, stdout=out_file)
     p.wait()
     out_file.close()
 
     out_file = open(out_dir + '/' + 'result', 'w')
     p = subprocess.Popen(shlex.split('python ' + args.script_dir
-                                     + '/../compare_marking.py '
+                                     + '/compare_marking.py '
                                      + data_files_names['t']
                                      + ' ' + out_file_name),
                          universal_newlines=True, stdout=out_file)
@@ -135,30 +136,20 @@ def executestar(args):
     return execute(*args)
 
 
-def rebase_paths(args):
-    impl_dir = os.getcwd() + '/'
-    args.script_dir = impl_dir + args.script_dir
-    args.out_dir = impl_dir + args.out_dir
+def set_paths(args):
     ensure_dir(args.out_dir)
     args.data_dir = args.out_dir + '/test-data'
     ensure_dir(args.data_dir)
-    args.fasta = impl_dir + args.fasta
-    args.kabat = impl_dir + args.kabat
-    if args.test_kabat and args.test_fasta:
-        args.test_kabat = impl_dir + args.test_kabat
-        args.test_fasta = impl_dir + args.test_fasta
     return args
-
-
-def main():
-    args = parse_args()
-    args = rebase_paths(args)
+	
+	
+def generate_datasets(args):
     command = 'python test_data_generator.py ' \
               + args.fasta + ' ' \
-              + args.kabat \
+              + args.marking \
               + ' --out-dir ' + args.data_dir
 
-    if args.test_fasta and args.test_kabat:
+    if args.test_fasta and args.test_marking:
         command += ' --max-count ' + str(args.train_seq_count) \
                    + ' --split-ratio 1 '
     else:
@@ -167,15 +158,19 @@ def main():
                    + ' --split-ratio ' + str(args.train_seq_count
                                              / (args.train_seq_count
                                                 + args.test_seq_count))
-    p = subprocess.Popen(shlex.split(command), cwd=args.script_dir)
+    p = subprocess.Popen(command, shell=True)
     p.wait()
+
+
+def main():
+    args = parse_args()
+    args = set_paths(args)
+    generate_datasets(args)
     tasks = [(args, i) for i in range(int(args.train_seq_count
                                           / args.tests_count),
                                       args.train_seq_count + 1,
                                       int(args.train_seq_count
                                           / args.tests_count))]
-    for i in tasks:
-        executestar(i)
     p = multiprocessing.Pool(args.max_threads)
     p.map(executestar, tasks)
 
