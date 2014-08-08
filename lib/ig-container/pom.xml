@@ -8,6 +8,7 @@
         <groupId>ru.biocad.igcat</groupId>
         <artifactId>igcat</artifactId>
         <version>1.0.0</version>
+		<relativePath>../..</relativePath>
     </parent>
     
     <artifactId>ig-container</artifactId>
@@ -15,7 +16,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>ru.biocad.ig-toolkit</groupId>
+            <groupId>ru.biocad.igcat</groupId>
             <artifactId>ig-alicont</artifactId>
             <version>1.0.0</version>
         </dependency>
