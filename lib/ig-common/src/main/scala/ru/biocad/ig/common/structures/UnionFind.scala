@@ -1,4 +1,4 @@
-package ru.biocad.ig.common.algorithm
+package ru.biocad.ig.common.structures
 
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random

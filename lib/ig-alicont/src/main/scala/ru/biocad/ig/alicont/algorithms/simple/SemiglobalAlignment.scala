@@ -1,7 +1,7 @@
 package ru.biocad.ig.alicont.algorithms.simple
 
 import ru.biocad.ig.alicont.algorithms.SimpleAlignment
-import ru.biocad.ig.alicont.common.Matrix
+import ru.biocad.ig.alicont.common.{PrepareIJ, Matrix}
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,7 +28,7 @@ object SemiglobalAlignment extends SimpleAlignment {
 
   def traceback(s : String, query : String, gap : Double, score_matrix : Array[Array[Double]], matrix : Matrix)
   : (Double, (String, String)) = {
-    var (score, i, j) = prepareIJ(s.size, query.size, matrix)
+    var (score, (i, j)) = PrepareIJ.semiglobal(s.size, query.size, matrix)
     val result_s = StringBuilder.newBuilder
     val result_q = StringBuilder.newBuilder
 
@@ -69,29 +69,10 @@ object SemiglobalAlignment extends SimpleAlignment {
         result_s.append(cs)
         result_q.append(cq)
       } else {
-        assert(false)
+        assert(assertion = false)
       }
     }
 
     (score, (result_q.reverse.mkString, result_s.reverse.mkString))
-  }
-
-  def prepareIJ(s : Int, q: Int, matrix : Matrix) : (Double, Int, Int) = {
-    var (maxlastrow, maxlastcol) = (Double.MinValue, Double.MinValue)
-    var (maxi, maxj) = (0, 0)
-    for (jt <- 0 to q) {
-      if (maxlastrow < matrix.last(jt)) {
-        maxlastrow = matrix.last(jt)
-        maxj = jt
-      }
-    }
-    for (it <- 0 to s) {
-      if (maxlastcol < matrix(it).last) {
-        maxlastcol = matrix(it).last
-        maxi = it
-      }
-    }
-
-    if (maxlastrow >= maxlastcol) (maxlastrow, s, maxj) else (maxlastcol, maxi, q)
   }
 }

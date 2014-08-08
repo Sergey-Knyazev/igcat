@@ -1,7 +1,7 @@
 package ru.biocad.ig.common.io.sff.common
 
 import java.io.{DataInput, IOException}
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.LazyLogging
 
 /**
  * Created with IntelliJ IDEA.
@@ -39,7 +39,7 @@ class SffHeader {
   }
 }
 
-object SffHeader extends Logging {
+object SffHeader extends LazyLogging {
   private val SFF_MAGIC_NUMBER = 779314790
   private val COMMON_HEADER_STATIC_SIZE = 4 + 4 + 8 + 4 + 4 + 2 + 2 + 2 + 1
 

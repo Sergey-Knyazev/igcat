@@ -1,5 +1,5 @@
 import org.scalatest.{Matchers, FlatSpec}
-import ru.biocad.ig.common.algorithm.ConsensusAlignment
+import ru.biocad.ig.alicont.ConsensusAlignment
 
 class ConsensusAlignmentTest extends FlatSpec with Matchers {
   "ConsensusAlignment" should "work on empty sequences" in {

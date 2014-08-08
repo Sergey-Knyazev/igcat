@@ -2,9 +2,7 @@ package ru.biocad.ig.igcont.anno
 
 import scala.collection.mutable
 import scala.collection.immutable
-
-import ru.biocad.ig.alicont.common
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.LazyLogging
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,7 +11,7 @@ import com.typesafe.scalalogging.slf4j.Logging
  * Time: 17:37
  */
 class Record(id : Int, n : String, s : Int,
-             anno_types : immutable.HashMap[String, mutable.ArrayBuffer[String]]) extends common.Record with Logging {
+             anno_types : immutable.HashMap[String, mutable.ArrayBuffer[String]]) extends LazyLogging {
   private val _id     = id
   private val _name   = n
   private val _cont   = mutable.ArrayBuffer.fill[Annotation](s)(null)

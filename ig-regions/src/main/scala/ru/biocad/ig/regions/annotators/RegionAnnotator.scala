@@ -1,13 +1,13 @@
 package ru.biocad.ig.regions.annotators
 
 import ru.biocad.ig.igcont.{ContainerUtils, Container}
-import ru.biocad.ig.common.sequence.SequenceType.SequenceType
-import ru.biocad.ig.alicont.AlignmentResult
+import ru.biocad.ig.common.io.common.SequenceType
+import SequenceType.SequenceType
 import ru.biocad.ig.alicont.algorithms.AlgorithmType.AlgorithmType
 import ru.biocad.ig.alicont.algorithms.AlgorithmType
 import ru.biocad.ig.regions.common.SequenceTrait
 import java.io.File
-import ru.biocad.ig.igcont.common.AnnotationResult
+import ru.biocad.ig.igcont.common.{AlignmentResult, AnnotationResult}
 
 /**
  * Created with IntelliJ IDEA.

@@ -1,5 +1,6 @@
 import ru.biocad.ig.alicont.algorithms.AlgorithmType
 import ru.biocad.ig.alicont.common.Scoring
+import ru.biocad.ig.common.resources.{MatrixTypes, MatrixLoader}
 import ru.biocad.ig.igcont.Container
 import org.scalatest.{Matchers, FlatSpec}
 import scala.collection.mutable
@@ -11,7 +12,7 @@ import scala.collection.mutable
  * Time: 15:25
  */
 class ContainerTest extends FlatSpec with Matchers {
-  val path : String = "data/matrix/NUC4.4.txt"
+  def nuc44 = MatrixLoader.byName(MatrixTypes.NUC44)
 
   "Container" should "add sequences easy" in {
     val cont = new Container("ACGT", 'N')
@@ -61,12 +62,12 @@ class ContainerTest extends FlatSpec with Matchers {
     cont.push("AAAAAAAAAAAAAAAAAAAAAATCTGTCGTGTTGGTTT", "Seq2")
 
     val set = new mutable.TreeSet[String]()
-    cont.alignment("AAAAAAGAAAAAAAATGCCAAAAAAATTGG", -5, Scoring.loadMatrix(path),
+    cont.alignment("AAAAAAGAAAAAAAATGCCAAAAAAATTGG", -5, Scoring.loadMatrix(nuc44),
       AlgorithmType.GLOBAL, 2).foreach(align => set += align.name)
 
     set should be (mutable.TreeSet[String]("SeqA", "Seq2"))
 
-    cont.alignment("AAAAAAGAAAAAAAATGCCAAAAAAATTGG", -5, Scoring.loadMatrix(path),
+    cont.alignment("AAAAAAGAAAAAAAATGCCAAAAAAATTGG", -5, Scoring.loadMatrix(nuc44),
       AlgorithmType.GLOBAL, 0.57).head.name should be ("Seq2")
   }
 
@@ -103,7 +104,7 @@ class ContainerTest extends FlatSpec with Matchers {
     cont.record(0).setAnnotation(3, "A", "1")
     cont.record(1).setAnnotation(2, "A", "2")
 
-    val res = cont.annotate("CTGGC", -5, Scoring.loadMatrix(path), AlgorithmType.GLOBAL, 3).annotations
+    val res = cont.annotate("CTGGC", -5, Scoring.loadMatrix(nuc44), AlgorithmType.GLOBAL, 3).annotations
     res.forall(tpl => tpl._2("A") == "1") shouldEqual true
   }
 
@@ -117,7 +118,7 @@ class ContainerTest extends FlatSpec with Matchers {
       (0 until 6).foreach(rec.setAnnotation(_, "A", seq))
     })
 
-    val res = cont.annotate("AAACCC", -5, Scoring.loadMatrix(path), AlgorithmType.LOCAL, 10).annotations
+    val res = cont.annotate("AAACCC", -5, Scoring.loadMatrix(nuc44), AlgorithmType.LOCAL, 10).annotations
     println(res)
     res.map(tpl => tpl._2("A")).mkString should be ("111222")
   }
@@ -127,10 +128,10 @@ class ContainerTest extends FlatSpec with Matchers {
     cont.push("AAATTT", "1")
     cont.push("GGGCCC", "2")
 
-    val res = cont.variants("AAACCC", -5, Scoring.loadMatrix(path), AlgorithmType.LOCAL, 10)._1
+    val res = cont.variants("AAACCC", -5, Scoring.loadMatrix(nuc44), AlgorithmType.LOCAL, 10)._1
     res.flatMap(vr => vr.variants).mkString should be ("AAACCC")
 
-    val res2 = cont.variants("AAACCC", -5, Scoring.loadMatrix(path), AlgorithmType.GLOBAL, 10)._1
+    val res2 = cont.variants("AAACCC", -5, Scoring.loadMatrix(nuc44), AlgorithmType.GLOBAL, 10)._1
     res2.flatMap(vr => vr.variants).mkString should be ("AGAGAGTCTCTC")
   }
 }

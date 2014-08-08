@@ -14,10 +14,10 @@ class AlicontLocal(maxheight : Int, query : String, gap : Double, score_matrix :
 
   def push(s : String) : Unit = {
     _strings.push(s)
-    LocalAlignment.extendMatrix(s, _query, _gap, _score, _scoreMatrix)
+    LocalAlignment.extendMatrix(s, _query, _gap, _score, _matrix)
   }
 
   def alignment() : (Double, (String, String)) = {
-    LocalAlignment.traceback(target, _query, _gap, _score, _scoreMatrix)
+    LocalAlignment.traceback(target, _query, _gap, _score, _matrix)
   }
 }

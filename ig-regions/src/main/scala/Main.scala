@@ -1,7 +1,7 @@
 
 import ru.biocad.ig.alicont.algorithms.AlgorithmType._
 import ru.biocad.ig.alicont.common.Scoring
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.LazyLogging
 import java.io._
 import ru.biocad.ig.regions.RegionsRunner
 
@@ -11,7 +11,7 @@ import ru.biocad.ig.regions.RegionsRunner
  * Date: 31.10.13
  * Time: 9:59
  */
-object Main extends Logging {
+object Main extends LazyLogging {
   private case class Config(amino : Boolean = false, fasta : File = null, kabat : File = null, source : File = null,
                             count : Int = 3, gap_open : Double = -10, gap_ext : Double = -1, gap : Double = -5,
                             scoring : Array[Array[Double]] = null, align : AlgorithmType = SEMIGLOBAL,
@@ -21,21 +21,22 @@ object Main extends Logging {
   def main(args : Array[String]) = {
     val parser = getParser
 
-    parser.parse(args, Config()) map {config => {
-      try {
-        RegionsRunner.run(config.amino, config.fasta, config.kabat, config.source,
-                          config.count, config.gap_open, config.gap_ext, config.gap,
-                          config.scoring, config.align, config.marking, config.filter,
-                          config.outdir, config.par, config.add_group)
-      } catch {
-        case e : Exception =>
-          logger.error(s"Fatal error: ${e.getMessage}")
-          if (config.debug) {
-            e.printStackTrace()
-          }
-      }
-    }} getOrElse {
-      parser.showUsage
+    parser.parse(args, Config()) match {
+      case Some(config) =>
+        try {
+          RegionsRunner.run(config.amino, config.fasta, config.kabat, config.source,
+            config.count, config.gap_open, config.gap_ext, config.gap,
+            config.scoring, config.align, config.marking, config.filter,
+            config.outdir, config.par, config.add_group)
+        } catch {
+          case e : Exception =>
+            logger.error(s"Fatal error: ${e.getMessage}")
+            if (config.debug) {
+              e.printStackTrace()
+            }
+        }
+      case None =>
+        parser.showUsage
     }
   }
 

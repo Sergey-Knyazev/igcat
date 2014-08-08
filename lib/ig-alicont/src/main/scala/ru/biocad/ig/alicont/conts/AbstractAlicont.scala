@@ -13,7 +13,7 @@ abstract class AbstractAlicont(maxheight : Int, query_string : String, score_mat
   protected val _query   = query_string
   protected val _score   = score_matrix
   protected val _strings = new mutable.Stack[String]()
-  protected val _scoreMatrix  = new Matrix(query_string.size, maxheight)
+  protected val _matrix  = new Matrix(query_string.size, maxheight)
 
   def push(s : String) : Unit
   def pop() : Unit

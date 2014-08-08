@@ -49,7 +49,7 @@ object GlobalAlignment extends SimpleAlignment {
         result_s.append(cs)
         result_q.append(cq)
       } else {
-        assert(false)
+        assert(assertion = false)
       }
     }
 

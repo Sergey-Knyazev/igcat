@@ -10,75 +10,79 @@ import ru.biocad.ig.alicont.common.Matrix
  * Time: 15:12
  */
 object GlobalAlignment extends AffineAlignment {
-  def extendMatrix(s : String, query : String, gapOpen : Double, gapExtend : Double, score_matrix : Array[Array[Double]],
-                   insertion_matrix : Matrix, deletion_matrix : Matrix, matrix : Matrix) : Unit = {
+  override def extendMatrix(s : String, query : String, gapOpen : Double, gapExtend : Double,
+                            score_matrix : Array[Array[Double]],
+                            horizontal_matrix : Matrix, vertical_matrix : Matrix, substitution_matrix : Matrix,
+                            matrix : Matrix): Unit = {
+    def move() : Unit = {
+      matrix.move(1)                 // V
+      horizontal_matrix.move(1)      // E
+      vertical_matrix.move(1)        // F
+      substitution_matrix.move(1)    // G
+    }
+
     if (matrix.height == 0) {
-      insertion_matrix.move(1)
-      deletion_matrix.move(1)
-      matrix.move(1)
+      move()
 
+      // Zero line initial values
+      (0 to query.size).foreach(i => {
+        val w = gapOpen + gapExtend * i
+        matrix.last(i)          = w
+        vertical_matrix.last(i) = w
+      })
       matrix.last(0) = 0
-      deletion_matrix.last(0) = Double.NegativeInfinity
-      (1 to query.size).foreach(i => matrix.last(i) = gapOpen + gapExtend * i)
-      (1 to query.size).foreach(i => deletion_matrix.last(i) = gapOpen + gapExtend * i)
-      (0 to query.size).foreach(i => insertion_matrix.last(i) = Double.NegativeInfinity)
-
     }
     (1 to s.size).foreach(i => {
+      move()
 
-      insertion_matrix.move(1)
-      deletion_matrix.move(1)
-      matrix.move(1)
-
-      insertion_matrix.last(0) = insertion_matrix.pred(0) + gapExtend
-      deletion_matrix.last(0) = Double.NegativeInfinity
-      matrix.last(0) = matrix.pred(0) + gapExtend
+      // Init zero pos values
+      val w = gapOpen + gapExtend * (matrix.height - 1)
+      matrix.last(0)            = w
+      horizontal_matrix.last(0) = w
 
       (1 to query.size).foreach(j => {
         val score = score_matrix(s(i - 1))(query(j - 1))
 
-        insertion_matrix.last(j) = Math.max(insertion_matrix.pred(j) + gapExtend,
-          matrix.pred(j) + (gapOpen + gapExtend))
-        deletion_matrix.last(j) = Math.max(deletion_matrix.last(j-1) + gapExtend,
-          matrix.last(j-1) + (gapOpen + gapExtend)
-        )
-        matrix.last(j) = (matrix.pred(j - 1) + score :: insertion_matrix.last(j) :: deletion_matrix.last(j) :: Nil).max
+        substitution_matrix.last(j) = matrix.pred(j - 1) + score
+        horizontal_matrix.last(j)   = List(horizontal_matrix.last(j - 1) + gapExtend,
+                                           matrix.last(j - 1) + gapOpen + gapExtend).max
+        vertical_matrix.last(j)     = List(vertical_matrix.pred(j) + gapExtend,
+                                           matrix.pred(j) + gapOpen + gapExtend).max
+
+        matrix.last(j) = List(substitution_matrix.last(j),
+                              horizontal_matrix.last(j),
+                              vertical_matrix.last(j)).max
       })
     })
   }
 
-  def traceback(s : String, query : String, score_matrix : Array[Array[Double]],
-                deletion_matrix : Matrix, insertion_matrix : Matrix, matrix : Matrix) : (Double, (String, String)) = {
+  override def traceback(s: String, query: String, horizontal_matrix: Matrix, vertical_matrix: Matrix,
+                         substitution_matrix: Matrix, matrix: Matrix): (Double, (String, String)) = {
     var (i, j) = (s.size, query.size)
+
     val result_s = StringBuilder.newBuilder
     val result_q = StringBuilder.newBuilder
 
     while (i != 0 || j != 0) {
-      val cs : Char = if (i > 0) s(i - 1) else 0
-      val cq : Char = if (j > 0) query(j - 1) else 0
-      if (j == 0) {
-        i -= 1
-        result_s.append(cs)
-        result_q.append('-')
-      } else if (i == 0) {
-        j -= 1
-        result_s.append('-')
-        result_q.append(cq)
-      } else if (matrix(i)(j) == deletion_matrix(i)(j)) {
-        i -= 1
-        result_s.append(cs)
-        result_q.append('-')
-      } else if (matrix(i)(j) == insertion_matrix(i)(j)) {
-        j -= 1
-        result_s.append('-')
-        result_q.append(cq)
-      } else if (matrix(i)(j) == matrix(i - 1)(j - 1) + score_matrix(cs)(cq)) {
+      val mij = matrix(i)(j)
+      if (mij == substitution_matrix(i)(j) && i != 0 && j != 0) {
+        result_s += s(i - 1)
+        result_q += query(j - 1)
         i -= 1
         j -= 1
-        result_s.append(cs)
-        result_q.append(cq)
-      } else {
-        assert(false)
+      }
+      else if ((mij == vertical_matrix(i)(j) || j == 0) && i != 0) {
+        result_s += s(i - 1)
+        result_q += '-'
+        i -= 1
+      }
+      else if ((mij == horizontal_matrix(i)(j) || i == 0) && j != 0) {
+        result_s += '-'
+        result_q += query(j - 1)
+        j -= 1
+      }
+      else {
+        assert(assertion = false)
       }
     }
 

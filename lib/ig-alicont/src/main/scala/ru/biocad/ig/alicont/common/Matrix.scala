@@ -6,8 +6,8 @@ package ru.biocad.ig.alicont.common
  * Date: 11.11.13
  * Time: 15:51
  */
-class Matrix(width : Int, maxheight : Int) {
-  private val _arrays    = Array.fill[Double](maxheight + 1, width + 1)(0)
+class Matrix(width : Int, maxheight : Int, init_value : Double = 0.0) {
+  private val _arrays    = Array.fill[Double](maxheight + 1, width + 1)(init_value)
   private val _width     = width
   private val _maxheight = maxheight
   private var _current   = -1

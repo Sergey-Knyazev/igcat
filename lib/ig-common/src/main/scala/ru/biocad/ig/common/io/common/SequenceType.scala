@@ -1,4 +1,4 @@
-package ru.biocad.ig.common.sequence
+package ru.biocad.ig.common.io.common
 
 /**
  * Created with IntelliJ IDEA.

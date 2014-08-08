@@ -10,7 +10,7 @@ import ru.biocad.ig.alicont.common.Matrix
  */
 trait AffineAlignment {
   def extendMatrix(s : String, query : String, gapOpen : Double, gapExtend : Double, score_matrix : Array[Array[Double]],
-                   insertion_matrix : Matrix, deletion_matrix : Matrix, matrix : Matrix) : Unit
-  def traceback(s : String, query : String, score_matrix : Array[Array[Double]],
-                insertion_matrix : Matrix, deletion_matrix : Matrix, matrix : Matrix) : (Double, (String, String))
+                   horizontal_matrix : Matrix, vertical_matrix : Matrix, substitution_matrix : Matrix, matrix : Matrix) : Unit
+  def traceback(s : String, query : String, horizontal_matrix : Matrix, vertical_matrix : Matrix,
+                substitution_matrix : Matrix, matrix : Matrix) : (Double, (String, String))
 }

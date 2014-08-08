@@ -6,7 +6,7 @@ import ru.biocad.ig.igcont.Container
 import ru.biocad.ig.common.io.MarkingUtils
 import ru.biocad.ig.common.io.fasta.FastaReader
 import java.io.File
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.LazyLogging
 import ru.biocad.ig.common.io.common.Sequence
 
 /**
@@ -15,7 +15,7 @@ import ru.biocad.ig.common.io.common.Sequence
  * Date: 13.01.14
  * Time: 15:24
  */
-object RegionAnnotatorUtils extends Logging {
+object RegionAnnotatorUtils extends LazyLogging {
   val regs = Array("FR1", "CDR1", "FR2", "CDR2", "FR3", "CDR3", "FR4")
   val reg = "Region"
 
@@ -118,7 +118,7 @@ object RegionAnnotatorUtils extends Logging {
     val s = anno.map(_ => 7).toArray
     r.zipWithIndex.foreach(tpl => {
       val (pos, region) = tpl
-      (pos(0) - 1 until pos(1)).foreach(i => s(i) = region)
+      if (!(pos(0) == 0 && pos(1) == pos(0))) (pos(0) - 1 until pos(1)).foreach(i => s(i) = region)
     })
 
     s.mkString

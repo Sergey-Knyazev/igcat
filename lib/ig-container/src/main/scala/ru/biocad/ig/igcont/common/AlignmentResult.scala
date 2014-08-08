@@ -1,8 +1,7 @@
-package ru.biocad.ig.alicont
+package ru.biocad.ig.igcont.common
 
 import scala.collection.immutable.HashMap
-
-import ru.biocad.ig.alicont.common.Record
+import ru.biocad.ig.igcont.anno.Record
 
 /**
  * Created with IntelliJ IDEA.

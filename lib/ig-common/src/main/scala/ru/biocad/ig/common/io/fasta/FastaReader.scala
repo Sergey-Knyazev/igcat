@@ -1,7 +1,8 @@
 package ru.biocad.ig.common.io.fasta
 
-import ru.biocad.ig.common.io.common.{SequenceReader, Sequence}
-import java.io.{IOException, FileReader, BufferedReader, File}
+import ru.biocad.ig.common.io.common.{SourceReader, SequenceReader, Sequence}
+import java.io._
+import scala.io.Source
 
 /**
  * Created with IntelliJ IDEA.
@@ -9,14 +10,23 @@ import java.io.{IOException, FileReader, BufferedReader, File}
  * Date: 08.02.14
  * Time: 23:59
  */
-class FastaReader(file : File, saveGaps : Boolean = false) extends SequenceReader {
+class FastaReader(source : Source, saveGaps : Boolean = false) extends SequenceReader {
   private val gaps = saveGaps
-  private val reader = new BufferedReader(new FileReader(file))
+  private val reader = new SourceReader(source)
   private var nextName : String = ""
+
+  def this(file : File) = {
+    this(Source.fromFile(file), false)
+  }
+
+  def this(file : File, saveGaps : Boolean) = {
+    this(Source.fromFile(file), saveGaps)
+  }
 
   skipSpaces()
 
-  override def hasNext : Boolean = nextName != null
+  override def hasNext : Boolean =
+    nextName != null
 
   override def next() : Sequence = {
     reader.synchronized {
@@ -32,8 +42,8 @@ class FastaReader(file : File, saveGaps : Boolean = false) extends SequenceReade
         nextName = reader.readLine()
       }
 
-      val sequence = seq.mkString.toUpperCase
-      Sequence(name, if (gaps) sequence else sequence.replaceAll("-", ""))
+      val sequence = seq.mkString.toUpperCase.replaceAll("\\s", "")
+      Sequence(name = name, sequence = if (gaps) sequence else sequence.replaceAll("-", ""))
     }
   }
 
@@ -50,13 +60,8 @@ class FastaReader(file : File, saveGaps : Boolean = false) extends SequenceReade
 }
 
 object FastaReader {
-  def sizeOf(file : File) : Int = {
-    val fr = new FastaReader(file)
-    var counter = 0
-    fr.foreach(_ => counter += 1)
-    fr.close()
-    counter
-  }
+  def sizeOf(file : File) : Int =
+    new FastaReader(file).count(_ => true)
 
   def sizeOf(filename : String) : Int = sizeOf(new File(filename))
 }

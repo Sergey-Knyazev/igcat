@@ -14,10 +14,10 @@ class AlicontSemiglobal(maxheight : Int, query : String, gap : Double, score_mat
 
   def push(s : String) : Unit = {
     _strings.push(s)
-    SemiglobalAlignment.extendMatrix(s, _query, _gap, _score, _scoreMatrix)
+    SemiglobalAlignment.extendMatrix(s, _query, _gap, _score, _matrix)
   }
 
   def alignment() : (Double, (String, String)) = {
-    SemiglobalAlignment.traceback(target, _query, _gap, _score, _scoreMatrix)
+    SemiglobalAlignment.traceback(target, _query, _gap, _score, _matrix)
   }
 }

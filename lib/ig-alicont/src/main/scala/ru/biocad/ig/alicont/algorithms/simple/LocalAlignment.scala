@@ -1,7 +1,7 @@
 package ru.biocad.ig.alicont.algorithms.simple
 
 import ru.biocad.ig.alicont.algorithms.SimpleAlignment
-import ru.biocad.ig.alicont.common.Matrix
+import ru.biocad.ig.alicont.common.{PrepareIJ, Matrix}
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,16 +29,7 @@ object LocalAlignment extends SimpleAlignment {
 
   def traceback(s : String, query : String, gap : Double, score_matrix : Array[Array[Double]], matrix : Matrix)
   : (Double, (String, String)) = {
-    var (i, j) = (s.size, query.size)
-
-    var score = Double.MinValue
-    for (it <- 0 to s.size; jt <- 0 to query.size) {
-      if (score < matrix(it)(jt)) {
-        score = matrix(it)(jt)
-        i = it
-        j = jt
-      }
-    }
+    var (score, (i, j)) = PrepareIJ.local(s.size, query.size, matrix)
 
     val result_s = StringBuilder.newBuilder
     val result_q = StringBuilder.newBuilder
@@ -60,7 +51,7 @@ object LocalAlignment extends SimpleAlignment {
         result_s.append(cs)
         result_q.append(cq)
       } else if (matrix(i)(j) != 0) {
-        assert(false)
+        assert(assertion = false)
       }
     }
 

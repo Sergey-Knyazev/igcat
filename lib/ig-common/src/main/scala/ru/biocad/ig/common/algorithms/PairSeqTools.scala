@@ -1,4 +1,4 @@
-package ru.biocad.ig.common.algorithm
+package ru.biocad.ig.common.algorithms
 
 /**
  * Created with IntelliJ IDEA.
@@ -7,7 +7,7 @@ package ru.biocad.ig.common.algorithm
  * Time: 17:28
  */
 object PairSeqTools {
-  def longestSubstr(s : String, t : String) : (Int, Int, Int) = {
+  def longestCommonSubstring(s : String, t : String) : (Int, Int, Int) = {
     if (s.isEmpty || t.isEmpty) {
       return (0, 0, 0)
     }
@@ -50,13 +50,6 @@ object PairSeqTools {
     (posi - maxLen + 1, posj - maxLen + 1, maxLen)
   }
 
-  def getAlignedPattern(seq_a : String, pattern_a : String) : String = {
-    var i = 0
-    var j = seq_a.size - 1
-
-    (seq_a zip pattern_a).takeWhile(c => c._2 == '-').foreach(_ => i += 1)
-    (seq_a zip pattern_a).reverseIterator.takeWhile(c => c._2 == '-').foreach(_ => j -= 1)
-
-    seq_a.substring(i, j + 1).replace("-", "")
-  }
+  def longestCommonPrefix(s : String, t : String) : String =
+    (s zip t).takeWhile(tpl => tpl._1 == tpl._2).map(_._1).mkString
 }

@@ -14,10 +14,10 @@ class AlicontGlobal(maxheight : Int, query : String, gap : Double, score_matrix 
 
   def push(s : String) : Unit = {
     _strings.push(s)
-    GlobalAlignment.extendMatrix(s, _query, _gap, _score, _scoreMatrix)
+    GlobalAlignment.extendMatrix(s, _query, _gap, _score, _matrix)
   }
 
   def alignment() : (Double, (String, String)) = {
-    GlobalAlignment.traceback(target, _query, _gap, _score, _scoreMatrix)
+    GlobalAlignment.traceback(target, _query, _gap, _score, _matrix)
   }
 }

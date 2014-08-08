@@ -1,5 +1,5 @@
 import org.scalatest.{Matchers, FlatSpec}
-import ru.biocad.ig.common.algorithm.UnionFind
+import ru.biocad.ig.common.structures.UnionFind
 
 /** Created by smirnovvs on 25.02.14. */
 class UnionFindTest extends FlatSpec with Matchers {

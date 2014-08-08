@@ -1,14 +1,13 @@
 package ru.biocad.ig.regions
 
 import ru.biocad.ig.regions.annotators.{RegionAnnotatorUtils, RegionAnnotator}
-import ru.biocad.ig.common.sequence.SequenceType
 import ru.biocad.ig.common.io.fasta.FastaReader
 import java.io.{FileWriter, BufferedWriter, File}
 import ru.biocad.ig.common.io.CachedMkdir
 import ru.biocad.ig.alicont.algorithms.AlgorithmType._
-import ru.biocad.ig.common.io.common.Sequence
+import ru.biocad.ig.common.io.common.{SequenceType, Sequence}
 import scala.Some
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.LazyLogging
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,7 +15,7 @@ import com.typesafe.scalalogging.slf4j.Logging
  * Date: 07.03.14
  * Time: 13:50
  */
-object RegionsRunner extends Logging {
+object RegionsRunner extends LazyLogging {
   private def constructAnnotator(amino : Boolean = false, fasta : File = null, kabat : File = null,
                                  gap_open : Double = -10, gap_ext : Double = -1, gap : Double = -5,
                                  scoring : Array[Array[Double]] = null,

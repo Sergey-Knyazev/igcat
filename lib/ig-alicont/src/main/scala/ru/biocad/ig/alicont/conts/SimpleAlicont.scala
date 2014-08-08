@@ -14,6 +14,6 @@ abstract class SimpleAlicont(maxheight : Int, query : String, gap : Double, scor
 
   def pop() : Unit = {
     val ls = _strings.pop()
-    _scoreMatrix.move(-ls.size)
+    _matrix.move(-ls.size)
   }
 }

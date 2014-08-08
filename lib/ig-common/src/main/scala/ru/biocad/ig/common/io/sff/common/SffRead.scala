@@ -1,7 +1,7 @@
 package ru.biocad.ig.common.io.sff.common
 
 import java.io.{IOException, DataInput}
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.LazyLogging
 import ru.biocad.ig.common.io.sff.common.SffRead.{SffReadHeader, SffReadData}
 import ru.biocad.ig.common.io.common.Sequence
 
@@ -23,11 +23,11 @@ case class SffRead(header : SffReadHeader, data : SffReadData) {
       end = header.clip_qual_right
     }
 
-    Sequence(header.name, data.bases.substring(start, end), data.quality.slice(start, end))
+    Sequence(name = header.name, sequence = data.bases.substring(start, end), quality = data.quality.slice(start, end))
   }
 }
 
-object SffRead extends Logging {
+object SffRead extends LazyLogging {
   private val READ_BLOCK_STATIC_SIZE = 2 + 2 + 4 + 2 + 2 + 2 + 2
 
   def fromDataInput(data : DataInput, common : SffHeader) : SffRead = {

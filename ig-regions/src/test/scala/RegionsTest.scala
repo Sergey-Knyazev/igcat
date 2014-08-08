@@ -1,8 +1,9 @@
 import java.io.File
 import ru.biocad.ig.alicont.algorithms.AlgorithmType
+import ru.biocad.ig.common.io.common.SequenceType
+import ru.biocad.ig.common.resources.{MatrixTypes, MatrixLoader}
 import ru.biocad.ig.regions.annotators.RegionAnnotator
 import ru.biocad.ig.alicont.common.Scoring
-import ru.biocad.ig.common.sequence.SequenceType
 import org.scalatest.{Matchers, FlatSpec}
 
 /**
@@ -14,7 +15,7 @@ import org.scalatest.{Matchers, FlatSpec}
 class RegionsTest extends FlatSpec with Matchers {
   val fasta = new File(getClass.getResource("/VDJH_train.fasta").toURI)
   val kabat = new File(getClass.getResource("/VDJH_train.kabat").toURI)
-  val matrix = Scoring.loadMatrix("data/matrix/NUC4.4.txt")
+  val matrix = Scoring.loadMatrix(MatrixLoader.byName(MatrixTypes.NUC44))
 
   "Region Annotator" should "align right" in {
     val a = new RegionAnnotator("VDJH", SequenceType.NUCLEO, fasta, kabat, matrix = matrix)

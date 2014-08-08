@@ -10,9 +10,9 @@ import ru.biocad.ig.igcont.kmer.bit.Counter
 
 import ru.biocad.ig.alicont.algorithms.AlgorithmType.AlgorithmType
 import ru.biocad.ig.alicont.conts.AbstractAlicont
-import ru.biocad.ig.alicont.{AlignmentResult, AlicontFactory}
-import ru.biocad.ig.igcont.common.{VariantsResult, AnnotationResult}
-import com.typesafe.scalalogging.slf4j.Logging
+import ru.biocad.ig.alicont.AlicontFactory
+import ru.biocad.ig.igcont.common.{AlignmentResult, VariantsResult, AnnotationResult}
+import com.typesafe.scalalogging.LazyLogging
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,7 +20,7 @@ import com.typesafe.scalalogging.slf4j.Logging
  * Date: 18.10.13
  * Time: 11:48
  */
-class Container(alphabet : String, special : Char, anno_types : Array[String], k : Int) extends Logging {
+class Container(alphabet : String, special : Char, anno_types : Array[String], k : Int) extends LazyLogging {
   private val _trie  = new Trie()
   private val _kstat = new Counter(alphabet, special, k)
   private val _anno  = new Anno(anno_types)
@@ -235,7 +235,8 @@ class Container(alphabet : String, special : Char, anno_types : Array[String], k
         val m = result.head
         if (align.score > m.score) {
           result += align
-          logger.debug(s"${result.dequeue().name} dequeued from results")
+          val dequeued = result.dequeue().name
+          logger.debug(s"$dequeued dequeued from results")
         }
       }
       else {

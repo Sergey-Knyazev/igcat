@@ -1,4 +1,4 @@
-package ru.biocad.ig.common.algorithm
+package ru.biocad.ig.alicont
 
 import scala.collection.mutable
 

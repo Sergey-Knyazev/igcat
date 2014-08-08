@@ -14,13 +14,15 @@ abstract class AffineAlicont(maxheight : Int, query : String, gap_open : Double,
 
   protected val _gap_open = gap_open
   protected val _gap_ext  = gap_ext
-  protected val _deletionMatrix  = new Matrix(query.size, maxheight)
-  protected val _insertionMatrix = new Matrix(query.size, maxheight)
+  protected val _substitutionMatrix = new Matrix(query.size, maxheight)
+  protected val _horizontalMatrix   = new Matrix(query.size, maxheight)
+  protected val _verticalMatrix    = new Matrix(query.size, maxheight)
 
   def pop() : Unit = {
     val ls = _strings.pop()
-    _scoreMatrix.move(-ls.size)
-    _deletionMatrix.move(-ls.size)
-    _insertionMatrix.move(-ls.size)
+    _matrix.move(-ls.size)
+    _substitutionMatrix.move(-ls.size)
+    _horizontalMatrix.move(-ls.size)
+    _verticalMatrix.move(-ls.size)
   }
 }
