@@ -241,8 +241,10 @@ ig-regions/target/ig-regions-1.0-SNAPSHOT.jar
 -m data/nomenclature/human/vh.kabat
 -s test/igbase/fasta/heavies.fasta
 --amino --igblast-like --outdir igblast\_compare}
- \shellcmd{\$ python scripts/diff\_info.py igblast\_compare/igblast\_like.marking
- test/igbase/igblast/heavies.kabat --part >> igblast\_compare/diff}
+ \shellcmd{\$ python scripts/diff\_info.py
+ test/igbase/igblast/heavies.kabat
+ igblast\_compare/igblast\_like.marking
+ --part >> igblast\_compare/diff}
  In the file igblast\_compare/diff you can see statistics of prediction differences.
  
  To compare IgCAT with Rosie just run following:
@@ -253,8 +255,9 @@ ig-regions/target/ig-regions-1.0-SNAPSHOT.jar
 -m data/nomenclature/human/vh.kabat
 -s test/rosie/fasta/vh.fasta
 --amino --igblast-like --outdir rosie\_compare}
- \shellcmd{\$ python scripts/diff\_info.py rosie\_compare/igblast\_like.marking
- test/rosie/prediction/vh.kabat >> rosie\_compare/diff}
+ \shellcmd{\$ python scripts/diff\_info.py test/rosie/rosetta/vh.kabat
+ rosie\_compare/igblast\_like.marking
+ --chothia 1 >> rosie\_compare/diff}
  In the file rosie\_compare/diff you can see statistics of prediction differences.
  See section \ref{subsec:scripts} for this file formatting description. 
  

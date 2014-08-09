@@ -29,7 +29,7 @@ def parse_args():
                        help='maximum count of sequences in container', type=int)
     parser.add_argument('-a', '--test-seq-count', default=1000,
                        help='count of sequences for annotation', type=int)
-    parser.add_argument('-t', '--seq-step', default=100, help='count of steps', type=int)
+    parser.add_argument('-t', '--seq-step', default=50, help='step period', type=int)
     parser.add_argument('-p', '--mode', default='affine-semiglobal',
                        help='alignment mode')
     parser.add_argument('-d', '--script-dir', default='..', help='scripts location')
