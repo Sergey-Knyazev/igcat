@@ -2,7 +2,7 @@ from __future__ import division
 
 import os
 import argparse
-from random import random
+from random import sample, seed
 from Bio import SeqIO
 
 
@@ -25,23 +25,12 @@ def split(fasta, marking, out_dir, ratio, count):
     test_mf = open(os.path.join(out_dir, "%s-test.%s" % (mpref, msuff)), "wt")
     test_ff = open(os.path.join(out_dir, "%s-test.%s" % (fpref, fsuff)), "wt")
 
-    prob = 1.46  # the maximum probability value in Russia
-    if count:
-        common = 0
-        for rec in SeqIO.parse(fasta, "fasta"):
-            if rec.id in marking_dict:
-                common += 1
-        prob = count / common
+    seqs = SeqIO.to_dict(SeqIO.parse(fasta, "fasta")).values()
 
+    seed()
     current = 0
-    for rec in SeqIO.parse(fasta, "fasta"):
-        if current == count:
-            break
-        if random() > prob:
-            continue
-        if rec.id not in marking_dict:
-            continue
-        if random() < ratio:
+    for rec in sample(seqs,count):
+        if current < ratio*count:
             SeqIO.write(rec, train_ff, "fasta")
             train_mf.write("%s" % marking_dict[rec.id])
         else:
